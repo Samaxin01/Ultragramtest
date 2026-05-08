@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultragram Premium</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+/* ✅ CSS NOT CHANGED */
+body {
+    margin: 0;
+    background: #0d0d0f;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #fff;
+}
+.container {
+    max-width: 420px;
+    margin: auto;
+    padding: 15px;
+}
+.header {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+.card {
+    background: linear-gradient(145deg, #2a2a2d, #1a1a1c);
+    border-radius: 16px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #bbb;
+}
+.status {
+    background: green;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    margin-left: 1em;
+    position: relative;
+    top: 2em;
+    left: 4em;
+}
+.badge {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background: #FFD600;
+    color: #000;
+    font-size: 12px;
+    padding: 5px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+}
+.redeem {
+    margin-top: 10px;
+    color: #ccc;
+    font-size: 14px;
+}
+.section-title {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 10px;
+}
+.stats {
+    display: flex;
+    gap: 10px;
+}
+.stat-box {
+    flex: 1;
+    background: #1b1b1d;
+    border-radius: 12px;
+    padding: 12px;
+}
+.stat-title {
+    font-size: 13px;
+    color: #bbb;
+    margin-bottom: 6px;
+}
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+}
+.progress {
+    height: 6px;
+    background: #333;
+    border-radius: 10px;
+    margin: 8px 0;
+    overflow: hidden;
+}
+.progress-bar {
+    height: 100%;
+    background: #FFD600;
+}
+.btn {
+    background: #FFD600;
+    color: #000;
+    font-weight: bold;
+    text-align: center;
+    padding: 6px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+.benefits {
+    background: #161618;
+    border-radius: 16px;
+    padding: 15px;
+    margin-top: 1em;
+    margin-b
+}
+.benefits h3 {
+    margin-top: 0;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 18px;
+    margin-top: 10px;
+}
+.item {
+    text-align: center;
+    font-size: 13px;
+    color: #ccc;
+}
+.item i {
+    font-size: 22px;
+    margin-bottom: 6px;
+    color: #FFD600;
+}
+.vip {
+    text-align: center;
+    margin-top: 15px;
+}
+.vip i {
+    font-size: 22px;
+    color: #FFD600;
+    margin-bottom: 6px;
+}
+/* NAV */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #0f0f11;
+    border-top: 1px solid #222;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+
+.bottom-nav div {
+    text-align: center;
+    font-size: 11px;
+    color: #888;
+}
+
+.bottom-nav i {
+    font-size: 18px;
+    color: #ffd600;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="header">Ultragram Premium</div>
+
+    <div class="card" style="position:relative;">
+        <div class="badge">PREMIUM</div>
+
+        <div class="profile">
+            <div class="avatar"></div>
+            <div>
+                <strong id="userEmail" style="color: white; font-size: 0.8em;">Loading...</strong>
+                <span class="status">Inactive</span><br>
+                <small style="color:#aaa;">Meet requirements to activate</small>
+            </div>
+        </div>
+
+        <div class="stat-value" id="realBalance">UTG0</div>
+    </div>
+
+    <div class="section-title">Meet requirements, Keep Premium active next month</div>
+
+    <div class="stats">
+        <div class="stat-box">
+            <div class="stat-title"><i class="fa-solid fa-coins"></i> AVG Daily Assets</div>
+            <div class="stat-value">UTG0</div>
+            <small>Minimum UTG20,000</small>
+
+            <div class="progress">
+                <div class="progress-bar" style="width:0%"></div>
+            </div>
+
+            <div class="btn">Add Money</div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-title"><i class="fa-solid fa-arrow-right-arrow-left"></i> Transactions</div>
+            <div class="stat-value" id="transactions">UTG0</div>
+            <small>Target UTG500,000</small>
+
+            <div class="progress">
+                <div class="progress-bar" style="width:2%"></div>
+            </div>
+
+            <div class="btn">Go Trade</div>
+        </div>
+    </div>
+
+    <div class="benefits">
+        <h3>Benefits | <span style="color:#888;">Exclusive for Premium</span></h3>
+
+        <div class="grid">
+            <div class="item"><i class="fa-solid fa-database"></i><div>Free Data</div><small>1GB for Free</small></div>
+            <div class="item"><i class="fa-solid fa-credit-card"></i><div>Credit Card</div><small>Higher Credit Limit</small></div>
+            <div class="item"><i class="fa-solid fa-rotate"></i><div>Cashback</div><small>Up to 6%</small></div>
+            <div class="item"><i class="fa-solid fa-message"></i><div>FREE SMS</div><small>Instant Alerts</small></div>
+            <div class="item"><i class="fa-solid fa-piggy-bank"></i><div>Savings</div><small>Exclusive 36% p.a.</small></div>
+            <div class="item"><i class="fa-solid fa-lightbulb"></i><div>SmartEarn</div><small>0 Fee</small></div>
+        </div>
+
+        <div class="vip">
+            <i class="fa-solid fa-headset"></i>
+            <div><strong style="color: gray;">VIP Service</strong></div>
+            <small>7/24 Priority Service</small>
+        </div>
+    </div>
+
+
+    <!-- NAV -->
+<div class="bottom-nav">
+    <div onclick="go('dashboard.html')"><i class="fa-solid fa-house"></i><br>Home</div>
+    <div onclick="go('task.html')"><i class="fa-solid fa-list"></i><br>Tasks</div>
+    <div onclick="go('convert.html')"><i class="fa-solid fa-wallet"></i><br>Convert</div>
+    <div onclick="go('referral.html')"><i class="fa-solid fa-users"></i><br>Profile</div>
+</div>
+</div>
+
+
+<!-- 🔥 FIREBASE SCRIPT TO LOAD USER EMAIL -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDim9k5CHfNythq6ORypN_RfwyLNMuxVLs",
+  authDomain: "sign-2fd98.firebaseapp.com",
+  projectId: "sign-2fd98",
+});
+
+const auth = getAuth(app);
+
+// SAME UID LIST
+const premiumUIDs = [
+    "PUT_UID_1_HERE",
+    "UKgA9naoCAglXYeY6IN3q1tv2bd2",
+    "PUT_UID_3_HERE",
+    "PUT_UID_4_HERE",
+    "PUT_UID_5_HERE",
+    "PUT_UID_6_HERE",
+    "PUT_UID_7_HERE",
+    "PUT_UID_8_HERE",
+    "PUT_UID_9_HERE",
+    "PUT_UID_10_HERE",
+];
+
+onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    // 🚫 BLOCK NON-PREMIUM USERS
+    if (!premiumUIDs.includes(user.uid)) {
+        window.location.href = "bronze.html";
+    }
+
+});
+
+// AUTH CHECK
+onAuthStateChanged(auth, async (user) => {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+     
+    // SHOW EMAIL (User → real email)
+    document.getElementById("userEmail").innerText = user.email;
+
+    // GET USER DATA FROM FIREBASE
+    const ref = doc(db, "users", user.uid);
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+        const data = snap.data();
+
+        const balance = data.balance || 0;
+
+        // 💰 MAIN BALANCE
+        document.getElementById("realBalance").innerText =
+            "UTG" + Number(balance).toLocaleString();
+
+        // 💰 ALSO UPDATE STATS
+        document.getElementById("dailyAssets").innerText =
+            "UTG" + Number(balance).toLocaleString();
+
+        document.getElementById("transactions").innerText =
+            "UTG" + Math.floor(balance * 0.1).toLocaleString(); // fake transaction estimate
+    }
+});
+</script>
+
+</body>
+</html>

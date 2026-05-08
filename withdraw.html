@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Withdraw USD</title>
+
+<style>
+body {
+    margin: 0;
+    background: #0d0d0f;
+    color: #fff;
+    font-family:  Inter, Poppins, system-ui, Arial;
+}
+h2{
+    text-align: center;
+}
+
+.container {
+    max-width: 420px;
+    margin: auto;
+    padding: 15px;
+}
+
+.card {
+    background: #141416;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+input, select {
+    width: 92%;
+    padding: 12px;
+    margin-top: 10px;
+    background: #1c1c20;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+}
+
+.btn {
+    background: #ffd600;
+    color: #000;
+    padding: 12px;
+    text-align: center;
+    border-radius: 10px;
+    margin-top: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.history {
+    font-size: 13px;
+    color: #ccc;
+}
+.button{
+
+}
+h3{
+    background: red;
+    width: 20%;
+    text-align: center;
+    font-size: 0.9em;
+    font-weight: 500;
+    border-radius: 0.8em;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="button">
+    <h3 onclick="window.location.href='convert.html'">Back</h3>
+</div>
+<h2>Withdraw</h2>
+
+<!-- BALANCE -->
+<div class="card">
+    <div>Airtime Balance: ₦<span id="usd">loading...</span></div>
+</div>
+
+<!-- FORM -->
+<div class="card">
+
+    <select id="network">
+        <option value="">Select Network</option>
+        <option>MTN</option>
+        <option>Airtel (Unavailable)</option>
+        <option>Glo (Unavailable)</option>
+    </select>
+
+    <input type="text" id="number" placeholder="Phone Number (+234)">
+    <input type="text" id="name" placeholder="Re-type Network to confirm (MTN)">
+    <input type="number" id="amount" placeholder="Amount (₦)">
+
+    <div class="btn" id="btn" onclick="withdraw()">Withdraw</div>
+
+</div>
+
+<!-- HISTORY -->
+<div class="card">
+    <h3>Withdrawal History</h3>
+    <div id="history"></div>
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+    getFirestore, doc, onSnapshot, updateDoc, arrayUnion, increment 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// 🔥 FIREBASE CONFIG
+const app = initializeApp({
+  apiKey: "AIzaSyDim9k5CHfNythq6ORypN_RfwyLNMuxVLs",
+  authDomain: "sign-2fd98.firebaseapp.com",
+  projectId: "sign-2fd98",
+});
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let userRef, userData;
+
+// 🔄 AUTH
+onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    userRef = doc(db, "users", user.uid);
+
+    onSnapshot(userRef, (snap) => {
+
+        if (!snap.exists()) {
+            alert("User data not found");
+            return;
+        }
+
+        userData = snap.data();
+
+        document.getElementById("usd").innerText = (userData.usdBalance || 0).toFixed(6);
+
+        renderHistory();
+
+    });
+
+});
+
+// 💸 WITHDRAW FUNCTION
+window.withdraw = async function () {
+
+    const btn = document.getElementById("btn");
+
+    const amount = parseFloat(document.getElementById("amount").value);
+    const network = document.getElementById("network").value;
+    const number = document.getElementById("number").value;
+    const name = document.getElementById("name").value;
+
+    if (!amount || amount <= 0) return alert("Enter valid amount");
+    if (!network) return alert("Select network");
+    if (!number || !name) return alert("Fill all fields");
+
+    if (amount > (userData.usdBalance || 0)) {
+        return alert("Insufficient balance");
+    }
+
+    // 🔥 LOADING
+    btn.classList.add("loading");
+    btn.innerText = "Processing...";
+
+    const request = {
+        id: Date.now().toString(),
+        amount: amount,
+        network: network,
+        number: number,
+        name: name,
+        status: "Pending",
+        date: Date.now(),
+        processedDate: null
+    };
+
+    try {
+
+        await updateDoc(userRef, {
+            usdBalance: increment(-amount),
+            withdrawHistory: arrayUnion(request)
+        });
+
+        document.getElementById("amount").value = "";
+        document.getElementById("number").value = "";
+        document.getElementById("name").value = "";
+
+        alert("✅ Withdrawal submitted!");
+
+    } catch (err) {
+        console.error(err);
+        alert("Error occurred");
+    }
+
+    btn.classList.remove("loading");
+    btn.innerText = "Withdraw";
+};
+
+// 📊 HISTORY DISPLAY
+function renderHistory() {
+
+    let html = "";
+
+    (userData.withdrawHistory || []).slice().reverse().forEach(w => {
+
+        html += `
+        <div class="history">
+            <strong>$${w.amount}</strong> - ${w.status} <br>
+            ${w.network} | ${w.number}<br>
+
+            <small>
+            Requested: ${new Date(w.date).toLocaleString()}<br>
+            ${w.processedDate 
+                ? "Processed: " + new Date(w.processedDate).toLocaleString() 
+                : "Processing..."}
+            </small>
+        </div>
+        <hr>
+        `;
+    });
+
+    document.getElementById("history").innerHTML = html;
+}
+</script>
+
+</body>
+</html>

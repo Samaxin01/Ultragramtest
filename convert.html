@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultragram</title>
+
+<style>
+body {
+    margin: 0;
+    background: #000000;
+    font-family: Inter, Poppins, system-ui, Arial;
+    color: #ffd900;
+}
+
+.container {
+    max-width: 420px;
+    margin: auto;
+    padding: 15px;
+
+}
+
+.card {
+    background: #141416;
+    border: 1px solid #222;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.small {
+    color: #ffffff;
+    font-size: 12px;
+}
+
+.balance {
+    font-size: 26px;
+    font-weight: bold;
+    color: #ffd900;
+}
+
+input {
+    width: 90%;
+    padding: 12px;
+    margin-top: 10px;
+    background: #1c1c20;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+}
+
+.btn {
+    background: #ffd900;
+    color: #000;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.btn.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+.container {
+    max-width: 400px;
+    margin: auto;
+    padding: 30px 20px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    display: grid;
+    align-content: center;
+    position: relative;
+    right: 1em;
+
+}
+/* NAV */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #0f0f11;
+    border-top: 1px solid #222;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+
+.bottom-nav div {
+    text-align: center;
+    font-size: 11px;
+    color: #888;
+}
+
+.bottom-nav i {
+    font-size: 18px;
+    color: #ffd600;
+}
+.txt1{
+    margin-top: 0;
+    margin-bottom: 4em;
+    text-align: center;
+    color: grey;
+    font-size: 10px;
+    position: relative;
+    justify-content: center;
+    display: grid;
+    transform: translate(20px, 10px);
+}
+/* BACKGROUND BLUR */
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.4);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    opacity:0;
+    pointer-events:none;
+
+    transition:0.3s;
+}
+
+/* SHOW */
+
+.overlay.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+/* POPUP */
+
+.popup{
+    width:280px;
+
+    background:rgba(40,40,40,0.95);
+
+    backdrop-filter:blur(12px);
+
+    border-radius:24px;
+
+    padding:20px;
+
+    text-align:center;
+
+    transform:scale(0.7);
+
+    transition:0.3s;
+}
+
+/* ANIMATION */
+
+.overlay.show .popup{
+    transform:scale(1);
+}
+
+/* TEXT */
+
+.popup-title{
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.popup-text{
+    color:#d1d1d1;
+    font-size:14px;
+    line-height:1.5;
+    margin-bottom:18px;
+}
+
+/* BUTTON */
+
+.popup-btn{
+    background:#0a84ff;
+    padding:12px;
+    border-radius:14px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.popup-btn:active{
+    transform:scale(0.96);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- POPUP -->
+
+<div class="overlay" id="popup">
+
+    <div class="popup">
+
+        <div class="popup-title" style="color: white;">
+            Convert 'n Withdraw
+        </div>
+
+        <div class="popup-text">
+            Convert UTG to be able to withdraw your earnings. <p>Min: 1000 UTG ∼ ₦100 <br>Max: 2000 UTG ∼ ₦200 </p>
+        </div>
+
+        <div class="popup-btn" onclick="closePopup()" style="color: black; background: #ffd600;">
+            Understood
+        </div>
+
+    </div>
+
+</div>
+
+    <h2>Ultragram</h2>
+
+    <!-- EMAIL -->
+    <div class="card">
+        <div id="email">Loading...</div>
+    </div>
+
+    <!-- NAIRA BALANCE -->
+    <div class="card">
+        <div class="small">UTG Balance</div>
+        <div class="balance">UTG<span id="naira">0</span></div>
+    </div>
+
+    <!-- USD BALANCE -->
+    <div class="card">
+        <div class="small">Airtime Balance</div>
+        <div class="balance">₦<span id="usd">0</span></div>
+    </div>
+
+    <!-- CONVERTER -->
+    <div class="card">
+        <div class="small">Convert UTG → ₦</div>
+
+        <input type="number" id="amount" placeholder="Enter UTG amount">
+        <div class="btn" id="btn" onclick="convert()">Convert</div>
+         <div class="btn" onclick="window.location.href='withdraw.html'">Withdraw</div>
+    </div>
+
+    <div class="txt1"><p>convert and withdraw.</p></div>
+
+</div>
+
+<!-- NAV -->
+<div class="bottom-nav">
+    <div onclick="go('dashboard.html')"><i class="fa-solid fa-house"></i><br>Home</div>
+    <div onclick="go('task.html')"><i class="fa-solid fa-list"></i><br>Tasks</div>
+    <div onclick="go('convert.html')"><i class="fa-solid fa-wallet"></i><br>Convert</div>
+    <div onclick="go('referral.html')"><i class="fa-solid fa-users"></i><br>Profile</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+    getFirestore, doc, onSnapshot, updateDoc, increment 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// 🔥 YOUR FIREBASE CONFIG
+const app = initializeApp({
+  apiKey: "AIzaSyDim9k5CHfNythq6ORypN_RfwyLNMuxVLs",
+  authDomain: "sign-2fd98.firebaseapp.com",
+  projectId: "sign-2fd98",
+});
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let userRef = null;
+let userData = null;
+
+// 🔥 RATE (₦100 = $0.0001)
+const RATE = 0.1;
+
+// 🔄 AUTH
+onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    document.getElementById("email").innerText = user.email;
+
+    userRef = doc(db, "users", user.uid);
+
+    onSnapshot(userRef, (snap) => {
+
+        if (!snap.exists()) {
+            alert("No user data found. Fix signup.");
+            return;
+        }
+
+        userData = snap.data();
+
+        document.getElementById("naira").innerText = (userData.balance || 0).toLocaleString();
+        document.getElementById("usd").innerText = (userData.usdBalance || 0).toFixed(6);
+
+    });
+
+});
+
+// 🔄 CONVERT
+window.convert = async function () {
+
+    const btn = document.getElementById("btn");
+    const input = document.getElementById("amount");
+
+    if (!userData) {
+        alert("Still loading...");
+        return;
+    }
+
+    const amount = parseFloat(input.value);
+
+    if (!amount || amount <= 0) {
+        alert("Enter valid amount");
+        return;
+    }
+
+    const balance = userData.balance || 0;
+
+    if (amount > balance) {
+        alert("Insufficient balance");
+        return;
+    }
+
+    // 🔥 LOADING
+    btn.classList.add("loading");
+    btn.innerText = "Converting...";
+
+    try {
+
+        const usd = amount * RATE;
+
+        await updateDoc(userRef, {
+            balance: increment(-amount),
+            usdBalance: increment(usd)
+        });
+
+        input.value = "";
+
+        alert("✅ Converted successfully!");
+
+    } catch (err) {
+        console.error(err);
+        alert("Error occurred");
+    }
+
+    btn.classList.remove("loading");
+    btn.innerText = "Convert";
+};
+
+
+</script>
+<script>
+    // SHOW AFTER 1 SECOND
+
+setTimeout(() => {
+
+    document
+    .getElementById("popup")
+    .classList.add("show");
+
+},1000);
+
+
+// CLOSE
+
+function closePopup(){
+
+    document
+    .getElementById("popup")
+    .classList.remove("show");
+
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultragram Dashboard</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    margin: 0;
+    background: black;
+    font-family:  Inter, Poppins, system-ui, Arial;
+    color: #fff;
+    padding-bottom: 70px;
+}
+
+.header {
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffd600;
+}
+
+/* CARD */
+.card {
+    margin: 0 15px 15px;
+    padding: 15px;
+    background: #000000;
+    border: 1px solid #67655a;
+    border-radius: 14px;
+}
+
+.small {
+    color: #ffffff;
+    font-size: 12px;
+}
+
+.balance {
+    font-size: 30px;
+    font-weight: bold;
+    color: #FFD600;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 15px;
+}
+
+.box {
+    background: #141416;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.box i {
+    color: #FFD600;
+}
+
+/* BUTTONS */
+.btn {
+    background: #121212;
+    border: 1px solid #3d3737;
+    color: #ffffff;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+.btn:hover{
+    background: transparent;
+    color: white;
+}
+
+.btn1 {
+    background: #121212;
+    border: 1px solid #3d3737;
+    color: #FFD600;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+.btn1:hover{
+    background: transparent;
+    color: white;
+}
+
+/* NAV */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #0f0f11;
+    border-top: 1px solid #222;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+
+.bottom-nav div {
+    text-align: center;
+    font-size: 11px;
+    color: #888;
+}
+
+.bottom-nav i {
+    font-size: 18px;
+    color: #ffd600;
+}
+.mini{
+    color: #ffd600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">Ultragram</div>
+
+<!-- PROFILE -->
+<div class="card">
+    <div id="email">Loading...</div>
+</div>
+
+<!-- BALANCE -->
+<div class="card">
+    <div class="small">Portfolio Value</div>
+    <div class="balance">UTG<span id="balance">:Loading</span></div>
+</div>
+
+<div class="card">
+    <div class="small">Daily Bonus</div>
+    
+    <div id="countdown" style="margin:10px 0;color:#888;">
+        Loading...
+    </div>
+
+    <div class="btn" id="claimBtn" onclick="claimBonus()">
+        🔒premium users only
+    </div>
+</div>
+
+<!-- GRAPH -->
+<div class="card">
+    <div class="small">Ultragram Growth Overview</div>
+    <canvas id="earnChart" height="120"></canvas>
+</div>
+
+<!-- STATS -->
+<div class="grid">
+
+    <div class="box">
+        <i class="fa-solid fa-coins"></i>
+        <div id="earnings" class="mini">UTG0</div>
+        <small class="small">Earnings</small>
+    </div>
+
+    <div class="box">
+        <i class="fa-solid fa-users"></i>
+        <div id="referrals" class="mini">0</div>
+        <small class="small">Referrals</small>
+    </div>
+
+    <div class="box">
+        <i class="fa-solid fa-list-check"></i>
+        <div id="tasks" class="mini">0</div>
+        <small class="small">Tasks</small>
+    </div>
+
+    <div class="box">
+        <i class="fa-solid fa-wallet"></i>
+        <div id="withdrawn" class="mini">UTG0</div>
+        <small class="small">Withdrawn</small>
+    </div>
+
+</div>
+
+<!-- ACTIONS -->
+<div class="card">
+   
+    <div class="btn1" onclick="go('referral.html')">👥Referral</div>
+</div>
+
+<!-- NAV -->
+<div class="bottom-nav">
+    <div onclick="go('dashboard.html')"><i class="fa-solid fa-house"></i><br>Home</div>
+    <div onclick="go('task.html')"><i class="fa-solid fa-list"></i><br>Tasks</div>
+    <div onclick="go('convert.html')"><i class="fa-solid fa-wallet"></i><br>Convert</div>
+    <div onclick="go('referral.html')"><i class="fa-solid fa-users"></i><br>Profile</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+    getFirestore, doc, onSnapshot 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// 🔥 YOUR FIREBASE
+const app = initializeApp({
+  apiKey: "AIzaSyDim9k5CHfNythq6ORypN_RfwyLNMuxVLs",
+  authDomain: "sign-2fd98.firebaseapp.com",
+  projectId: "sign-2fd98",
+});
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let chart;
+
+// NAV
+window.go = (page) => window.location.href = page;
+
+// BALANCE ANIMATION
+function animateValue(el, start, end, duration) {
+    let startTime = null;
+
+    function step(timestamp) {
+        if (!startTime) startTime = timestamp;
+        let progress = Math.min((timestamp - startTime) / duration, 1);
+
+        el.innerText = Math.floor(progress * (end - start) + start).toLocaleString();
+
+        if (progress < 1) requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+}
+
+// AUTH + REALTIME
+onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    document.getElementById("email").innerText = user.email;
+
+    const ref = doc(db, "users", user.uid);
+
+    onSnapshot(ref, (snap) => {
+
+        if (!snap.exists()) return;
+
+        const data = snap.data();
+
+        const balance = data.balance || 0;
+
+        // 💰 Animate balance
+        animateValue(document.getElementById("balance"), 0, balance, 1000);
+
+        // 📊 Stats
+        document.getElementById("earnings").innerText = "UTG" + balance.toLocaleString();
+        document.getElementById("referrals").innerText = data.referrals || 0;
+        document.getElementById("tasks").innerText = (data.completedTasks || []).length;
+        document.getElementById("withdrawn").innerText = "UTG" + (data.withdrawn || 0);
+
+        // 📈 Graph
+        const history = data.earningsHistory || [0, 200, 400, 800];
+
+        const ctx = document.getElementById("earnChart");
+
+        if (chart) chart.destroy();
+
+        chart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: ["1","2","3","4","5","6","7"],
+                datasets: [{
+                    data: history,
+                    borderColor: "#f7d37a",
+                    backgroundColor: "rgba(247,211,122,0.1)",
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: "#888" }, grid: { color: "#222" }},
+                    y: { ticks: { color: "#888" }, grid: { color: "#222" }}
+                }
+            }
+        });
+
+    });
+
+});
+</script>
+
+</body>
+</html>

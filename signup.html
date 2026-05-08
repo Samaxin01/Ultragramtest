@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultragram Signup</title>
+
+<style>
+body {
+      margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Inter, Poppins, system-ui, Arial;
+    color: white;
+    background: black;
+}
+
+.container {
+    max-width: 400px;
+    margin: auto;
+    padding: 30px 20px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    display: grid;
+    align-content: center;
+    position: relative;
+    right: 0.5em;
+}
+
+.logo {
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
+    color: #FFD600;
+    margin-bottom: 2px;
+}
+
+.input-box {
+    margin-bottom: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    background: #111;
+    color: #fff;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    background: #FFD600;
+    font-weight: bold;
+    position: relative;
+    left: 1em;
+}
+.txt2{
+    font-size: 0.7em;
+    text-align: center;
+}
+
+.msg {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+a {
+    color: #FFD600;
+    text-decoration: none;
+}
+p.sub{margin:0 0 10px;font-size:12px;color:white;text-align:center;position: relative;
+    left: 1em;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">Ultragram</div>
+    <p class="sub">Signup to start your earning journey </p>
+    <div class="input-box">
+        <input type="email" id="email" placeholder="Email">
+    </div>
+
+    <div class="input-box">
+        <input type="password" id="password" placeholder="Password">
+    </div>
+
+    <div class="input-box">
+        <input type="password" id="confirm" placeholder="Confirm Password">
+    </div>
+
+    <div class="input-box">
+        <input type="text" id="ref" placeholder="Referral Code (optional)">
+    </div>
+
+    <button onclick="signup()">Create Account</button>
+
+    <div class="msg" id="msg"></div>
+
+    <p style="text-align: center;
+    margin-top: 15px;
+    color: white;
+    position: relative;
+    left: 1em;">
+        Already have account? <a href="login.html">Login</a>
+    </p>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  sendEmailVerification,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// FIREBASE CONFIG
+const app = initializeApp({
+  apiKey: "AIzaSyDim9k5CHfNythq6ORypN_RfwyLNMuxVLs",
+  authDomain: "sign-2fd98.firebaseapp.com",
+  projectId: "sign-2fd98",
+});
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+const msg = document.getElementById("msg");
+
+// GET REFERRAL FROM LINK
+const urlParams = new URLSearchParams(window.location.search);
+const refFromLink = urlParams.get("ref");
+
+if (refFromLink) {
+    document.getElementById("ref").value = refFromLink;
+}
+
+// CUSTOM ERROR MESSAGES
+function getError(error) {
+    switch (error.code) {
+        case "auth/email-already-in-use":
+            return "This email is already registered.";
+        case "auth/invalid-email":
+            return "Invalid email address.";
+        case "auth/weak-password":
+            return "Password must be at least 6 characters.";
+        default:
+            return "Something went wrong. Try again.";
+    }
+}
+
+// SIGNUP FUNCTION
+window.signup = async function () {
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm").value;
+    const ref = document.getElementById("ref").value.trim();
+
+    msg.innerText = "";
+
+    if (!email || !password || !confirm) {
+        msg.innerText = "Please fill all required fields ❌";
+        return;
+    }
+
+    if (password !== confirm) {
+        msg.innerText = "Passwords do not match ❌";
+        return;
+    }
+
+    try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+
+        // GENERATE REF CODE
+        const myRefCode = userCred.user.uid.slice(0, 8);
+
+        // SEND EMAIL VERIFICATION
+        await sendEmailVerification(userCred.user);
+
+        // SAVE USER DATA
+        await setDoc(doc(db, "users", userCred.user.uid), {
+            email: email,
+            balance: 0,
+            joinDate: new Date().toLocaleString(),
+            referrals: 0,
+            refCode: myRefCode,
+            referredBy: ref || null,
+            verified: false
+        });
+
+        msg.innerText = "Verification link sent 📩 Check your email before login.";
+
+        // FORCE LOGOUT UNTIL VERIFIED
+        await signOut(auth);
+
+    } catch (error) {
+        msg.innerText = getError(error);
+    }
+};
+</script>
+
+</body>
+</html>

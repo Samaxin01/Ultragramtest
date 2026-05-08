@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loading...</title>
+</head>
+
+<body style="background:black;color:#FFD600;text-align:center;padding-top:50px;font-family: Inter, Poppins, system-ui, Arial;">
+Checking account...
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// 🔥 YOUR FIREBASE CONFIG
+const app = initializeApp({
+  apiKey: "AIzaSyDim9k5CHfNythq6ORypN_RfwyLNMuxVLs",
+  authDomain: "sign-2fd98.firebaseapp.com",
+  projectId: "sign-2fd98",
+});
+
+const auth = getAuth(app);
+
+// 🔐 PREMIUM UID LIST (ADD YOUR OWN)
+const premiumUIDs = [
+    "UKgA9naoCAglXYeY6IN3q1tv2bd2",
+    "PUT_UID_2_HERE",
+    "PUT_UID_3_HERE"
+];
+
+// 🔄 CHECK USER
+onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    if (premiumUIDs.includes(user.uid)) {
+        window.location.href = "premium.html";
+    } else {
+        window.location.href = "dashboard.html";
+    }
+
+});
+</script>
+
+</body>
+</html>

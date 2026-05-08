@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultragram Login</title>
+
+<style>
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Inter, Poppins, system-ui, Arial;
+    color: white;
+    background: black;
+}
+
+/* Container */
+.container {
+   max-width: 400px;
+    margin: auto;
+    padding: 30px 20px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    display: grid;
+    align-content: center;
+    position: relative;
+    right: 0.5em;
+}
+
+/* Logo */
+.logo {
+    text-align: center;
+    font-size: 26px;
+    font-weight: bold;
+    color: #FFD600;
+   
+}
+
+/* Inputs */
+.input-box {
+    margin-bottom: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    background: #111;
+    color: #fff;
+    font-size: 14px;
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    background: #FFD600;
+    font-weight: bold;
+    margin-top: 1px;
+    position: relative;
+    left: 1em;
+}
+
+/* Message */
+.msg {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+/* Link */
+a {
+    color: #FFD600;
+    text-decoration: none;
+}
+p.sub{margin:0 0 10px;font-size:12px;color:white;text-align:center;position: relative;
+    left: 1em;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">Ultragram</div>
+    <p class="sub">Signin to access your dashboard</p>
+    <div class="input-box">
+        <input type="email" id="email" placeholder="Email">
+    </div>
+
+    <div class="input-box">
+        <input type="password" id="password" placeholder="Password">
+    </div>
+
+    <button onclick="login()">Login</button>
+
+    <div class="msg" id="msg"></div>
+
+    <p style="text-align: center;
+    margin-top: 5px;
+    position: relative;
+    left: 0.7em;">
+        Don’t have an account? <a href="signup.html">Sign up</a>
+    </p>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDim9k5CHfNythq6ORypN_RfwyLNMuxVLs",
+  authDomain: "sign-2fd98.firebaseapp.com",
+  projectId: "sign-2fd98",
+});
+
+const auth = getAuth(app);
+const msg = document.getElementById("msg");
+
+// AUTO REDIRECT IF LOGGED IN
+onAuthStateChanged(auth, (user) => {
+    if (user && user.emailVerified) {
+        window.location.href = "auth-redirect.html";
+    }
+});
+
+// CUSTOM ERROR MESSAGES
+function getError(error) {
+    switch (error.code) {
+        case "auth/invalid-email":
+            return "Invalid email address.";
+        case "auth/user-not-found":
+            return "No account found.";
+        case "auth/wrong-password":
+            return "Incorrect password.";
+        case "auth/invalid-credential":
+            return "Wrong email or password.";
+        default:
+            return "Login failed. Try again.";
+    }
+}
+
+// LOGIN FUNCTION
+window.login = async function () {
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    msg.innerText = "";
+
+    if (!email || !password) {
+        msg.innerText = "Fill all fields ❌";
+        return;
+    }
+
+    try {
+        const userCred = await signInWithEmailAndPassword(auth, email, password);
+
+       // verify
+       if (!user.emailVerified) {
+    msg.innerText = "Verify your email first 📩";
+    return;
+}
+
+
+        // CHECK EMAIL VERIFICATION
+        if (!userCred.user.emailVerified) {
+            await signOut(auth);
+            msg.innerText = "Please verify your email before logging in 📩";
+            return;
+        }
+
+        msg.innerText = "Login successful ✅";
+
+        setTimeout(() => {
+            window.location.href = "auth-redirect.html";
+        }, 1000);
+
+    } catch (error) {
+        msg.innerText = getError(error);
+    }
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,505 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#000000"/>
+  <title>Ultragram - Tasks</title>
+  <style>
+    :root{
+    --bgcolor: #000000;
+    --maintxt: #ffd900;
+    --normaltxt: #ffffff;
+}
+    body {
+      font-family:  ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: #000000;
+      margin: 0;
+      padding: 1rem;
+    }
+
+    .task {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      padding: 1rem 1.5rem;
+      animation: fadeIn 0.7s ease-in;
+    }
+
+    .task h2 {
+      font-size: 1.3rem;
+      margin: 0 0 10px;
+      color: black;
+    }
+
+    .instructions {
+      color: #000000;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .task button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 10px;
+      margin-right: 10px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .screenshot-btn {
+      background: black;
+      color: white;
+    }
+    .screenshot-btn:hover{
+      background: grey;
+    }
+
+    .submit-btn {
+      background: var(--maintxt);
+      color: white;
+    }
+    .submit-btn:hover{
+      background-color: black;
+    }
+
+    .task button:hover {
+      opacity: 0.8;
+    }
+
+    .popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      max-width: 95%;
+      width: 400px;
+      text-align: center;
+      animation: popIn 0.5s ease;
+    }
+
+    .popup img {
+      max-width: 100%;
+      margin: 10px 0;
+      border-radius: 10px;
+    }
+
+    .popup form input, .popup form label {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+    }
+
+    .popup form input[type="submit"] {
+      background: var(--maintxt);
+      color: white;
+      cursor: pointer;
+      border: none;
+      font-weight: bold;
+    }
+
+    .popup .close {
+      position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 40px;
+    color: red;
+    }
+    /* NAV */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #0f0f11;
+    border-top: 1px solid #222;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+
+.bottom-nav div {
+    text-align: center;
+    font-size: 11px;
+    color: #888;
+}
+
+.bottom-nav i {
+    font-size: 18px;
+    color: #ffd600;
+}
+  .active .icon, 
+.active .text {
+  animation: glow 1.5s infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 5px #ffd900, 0 0 10px #ffd900;
+    filter: drop-shadow(0 0 3px #ffd900);
+    color: #ffd900;
+  }
+  to {
+    text-shadow: 0 0 10px #ffd900, 0 0 20px #ffd900;
+    filter: drop-shadow(0 0 6px #ffd900);
+    color: #ffffff;
+  }
+}
+.create {
+  background: var(--maintxt);
+    position: relative;
+    z-index: 99;
+    padding: 0.2em;
+    border-radius: 5em;
+    cursor: pointer;
+    color: white; 
+    
+}
+.create:hover {
+  background: white;
+  color: purple;
+  transition: 0.5s;
+}
+    .task-status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.pending {
+  background: #fff8dc;
+  color: #ff9800;
+  box-shadow: 0 0 8px #ffecb3;
+  animation: glow-yellow 1s infinite alternate;
+}
+
+
+.seen {
+  background: #e8f5e9;
+  color: #4caf50;
+  box-shadow: 0 0 8px #c8e6c9;
+  animation: glow-green 1s infinite alternate;
+}
+
+@keyframes glow-yellow {
+  from { box-shadow: 0 0 5px #ffd54f; }
+  to   { box-shadow: 0 0 15px #ffca28; }
+}
+
+@keyframes glow-green {
+  from { box-shadow: 0 0 5px #81c784; }
+  to   { box-shadow: 0 0 15px #66bb6a; }
+}
+
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes popIn {
+      from {transform: scale(0.8); opacity: 0;}
+      to {transform: scale(1); opacity: 1;}
+    }
+    .perform{
+      background: rgb(0, 0, 0);
+    color: white;
+    }
+    a{
+      color: white;
+      text-decoration: none;
+    }
+    .reward{
+      position: relative;
+    bottom: 0.5em;
+    font-weight: 500;
+    color: green;
+    }
+    .more-coming{
+      margin-bottom: 4em;
+    color: grey;
+    text-align: center;
+    font-style: italic;
+    }
+     .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-size: 1.5rem;
+      text-align: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .overlay .message {
+      background: red;
+    padding: 2005px 383px;
+    border-radius: 15px;
+    box-shadow: 0 0 25px rgba(255, 59, 48, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    }
+
+    .overlay img {
+      width: 50px;
+      height: 50px;
+    }
+
+    .restored {
+      background: #34c759 !important;
+      animation: fadeOut 2s forwards;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+
+  </style>
+</head>
+<body>
+<div id="networkOverlay" class="overlay hidden">
+    <div class="message" id="networkMessage">
+      <img src="https://cdn-icons-png.flaticon.com/512/564/564619.png" alt="No Internet Icon">
+      <span>POOR INTERNET CONNECTION</span>
+    </div>
+  </div>
+
+  <!-- Task List -->
+  <div class="task" data-task="task1">
+    <h2>📲 Join the Ultragram WhatsApp Channel</h2>
+    <div class="instructions">👉 Click the link and join the group. <br>📸 Take a screenshot of the Channel message.<br>💰Get Rewarded.</div>
+    <div class="reward">💵 Reward:₦30 <br>🥷 Owner: *****</div>
+    <button class="screenshot-btn" onclick="showScreenshots('task1')">🖼️ Screenshot Needed</button>
+    <button class="submit-btn" onclick="showForm('task1')">✅ Submit Task Proof</button>
+    <button class="perform"><a href="https://whatsapp.com/channel/0029Vb6e6hfCHDysaroNsw3j">Perform</a></button>
+    <div class="task-status" id="status-task1">No submission yet</div>
+
+  </div>
+
+  <!-- task 2 -->
+  <div class="task" data-task="task2">
+    <h2>📦 Follow Ultragram Facebook Page</h2>
+    <div class="instructions">👍 Like & Follow our Facebook page. <br>📸 Upload screenshot of your profile showing our follow.<br>💰Get Rewarded.</div>
+    <div class="reward">💵 Reward:₦20 <br>🥷 Owner: *****</div>
+    <button class="screenshot-btn" onclick="showScreenshots('task2')">🖼️ Screenshot Needed</button>
+    <button class="submit-btn" onclick="showForm('task2')">✅ Submit Task Proof</button>
+    <button class="perform"><a href="#">Perform</a></button>
+    <div class="task-status" id="status-task2">No submission yet</div>
+  </div>
+
+  <!-- task 3 -->
+  <div class="task" data-task="task3">
+    <h2>📲 Join Ultragram Telegram Channel</h2>
+    <div class="instructions">🚪 Hit the Join button. <br>📸 Upload proof of your joined and liked post.<br>💰Get Rewarded.</div>
+    <div class="reward">💵 Reward:₦20 <br>🥷 Owner: *****</div>
+    <button class="screenshot-btn" onclick="showScreenshots('task3')">🖼️ Screenshot Needed</button>
+    <button class="submit-btn" onclick="showForm('task3')">✅ Submit Task Proof</button>
+    <button class="perform"><a href="#">Perform</a></button>
+    <div class="task-status" id="status-task3">No submission yet</div>
+  </div>
+
+  <!-- task 4 -->
+  <div class="task" data-task="task4">
+    <h2>⬆️ Upload Your Ultragram link on Status</h2>
+    <div class="instructions">⬆️ Upload Your Boltz link on Whatsapp Status. <br>🟢Get atleast 6 views  <br>📸 Upload screenshot.<br>❌This task must be completed once. <br>💰Get Rewarded.</div>
+    <div class="reward">💵 Reward:₦20 <br>🥷 Owner: Boltz</div>
+    <button class="screenshot-btn" onclick="showScreenshots('task4')">🖼️ Screenshot Needed</button>
+    <button class="submit-btn" onclick="showForm('task4')">✅ Submit Task Proof</button>
+    <button class="perform"><a href="Boltz has finally launchedsssqq.jpg">Perform</a></button>
+    <div class="task-status" id="status-task4">No submission yet</div>
+  </div>
+
+  <!-- task5 -->
+   <div class="task" data-task="task5">
+    <h2>⬆️ Signup to Efsantre</h2>
+    <div class="instructions">⬆️ Signup with the Link Provided. <br>📸 Upload screenshot before and after signing up. <br>💰Get Rewarded.</div>
+    <div class="reward">💵 Reward:₦50 <br>🥷 Owner: *****</div>
+    <button class="screenshot-btn" onclick="showScreenshots('task5')">🖼️ Screenshot Needed</button>
+    <button class="submit-btn" onclick="showForm('task5')">✅ Submit Task Proof</button>
+    <button class="perform"><a href="#">Perform</a></button>
+    <div class="task-status" id="status-task5">No submission yet</div>
+  </div>
+
+  <!-- task6 -->
+   <div class="task" data-task="task6">
+    <h2>🔁 Repost on your Whatsapp status</h2>
+    <div class="instructions">📩 Post the image with the caption on your status from the Hustle Whatsapp Channel. <br>👁️‍🗨️ Have atleast 10views. <br>📸 Upload screenshot. <br>💰Get Rewarded.</div>
+    <div class="reward">💵 Reward:₦20 <br>🥷 Owner: *****</div>
+    <button class="screenshot-btn" onclick="showScreenshots('task6')">🖼️ Screenshot Needed</button>
+    <button class="submit-btn" onclick="showForm('task6')">✅ Submit Task Proof</button>
+    <button class="perform"><a href="#">Perform</a></button>
+    <div class="task-status" id="status-task6">No submission yet</div>
+  </div>
+
+  <!-- task7 -->
+   <div class="task" data-task="task7">
+    <h2>🔂 Repost on your Facebook Feed</h2>
+    <div class="instructions">📩 Post the image with the caption on your Facebook from the Hustle Whatsapp Channel. <br>👍 Have atleast 10 likes. <br>📸 Upload screenshot. <br>💰Get Rewarded.</div>
+    <div class="reward">💵 Reward:₦30 <br>🥷 Owner: *****</div>
+    <button class="screenshot-btn" onclick="showScreenshots('task7')">🖼️ Screenshot Needed</button>
+    <button class="submit-btn" onclick="showForm('task7')">✅ Submit Task Proof</button>
+    <button class="perform"><a href="#">Perform</a></button>
+    <div class="task-status" id="status-task7">No submission yet</div>
+  </div>
+
+  <!-- task8 -->
+   <div class="task" data-task="task8">
+    <h2>⬆️ Signup and Connect to XSSOKK</h2>
+    <div class="instructions">⬆️ Signup with the Link Provided. <br>🟢Connect Whatsapp for 2days  <br>📸 Upload screenshot after connecting for 2days.<br>❌Low Banning Rate. <br>💰Get Rewarded.</div>
+    <div class="reward">💵 Reward:₦300 <br>🥷 Owner: *****</div>
+    <button class="screenshot-btn" onclick="showScreenshots('task8')">🖼️ Screenshot Needed</button>
+    <button class="submit-btn" onclick="showForm('task8')">✅ Submit Task Proof</button>
+    <button class="perform"><a href="#">Perform</a></button>
+    <div class="task-status" id="status-task8">No submission yet</div>
+  </div>
+
+  <!-- task9 -->
+   <div class="task" data-task="task9">
+    <h2>🔂 Post on your Instagram Feed</h2>
+    <div class="instructions">📩 Post the image with the caption on your Instagram from the Hustle Whatsapp Channel. <br>💖 Have atleast 10 likes. <br>📸 Upload screenshot. <br>💰Get Rewarded.</div>
+    <div class="reward">💵 Reward:₦40 <br>🥷 Owner: *****</div>
+    <button class="screenshot-btn" onclick="showScreenshots('task9')">🖼️ Screenshot Needed</button>
+    <button class="submit-btn" onclick="showForm('task9')">✅ Submit Task Proof</button>
+    <button class="perform"><a href="#">Perform</a></button>
+    <div class="task-status" id="status-task9">No submission yet</div>
+  </div>
+
+    <!-- task10 -->
+    <div class="task" data-task="task10">
+    <h2>➕ Join Whatsapp Group</h2>
+    <div class="instructions">👥 Join the whatsapp group. <br>📸 Upload screenshot. <br>💰Get Rewarded.</div>
+    <div class="reward">💵 Reward:₦20 <br>🥷 Owner: jees*****@gmail.com</div>
+    <button class="screenshot-btn" onclick="showScreenshots('task10')">🖼️ Screenshot Needed</button>
+    <button class="submit-btn" onclick="showForm('task10')">✅ Submit Task Proof</button>
+    <button class="perform"><a href="#">Perform</a></button>
+    <div class="task-status" id="status-task10">No submission yet</div>
+  </div>
+  <!-- task11 -->
+   <div class="task" data-task="task10">
+    <h2>➕ Join Whatsapp Group</h2>
+    <div class="instructions">👥 Join the whatsapp group. <br>📸 Upload screenshot. <br>💰Get Rewarded.</div>
+    <div class="reward">💵 Reward:₦20 <br>🥷 Owner: jees*****@gmail.com</div>
+    <button class="screenshot-btn" onclick="showScreenshots('task10')">🖼️ Screenshot Needed</button>
+    <button class="submit-btn" onclick="showForm('task10')">✅ Submit Task Proof</button>
+    <button class="perform"><a href="#">Perform</a></button>
+    <div class="task-status" id="status-task10">No submission yet</div>
+  </div>
+
+  <div class="more-coming">
+    <p>More Tasks are Coming Soon... </p>
+  </div>
+
+  <!-- Screenshot Popup -->
+  <div class="popup" id="screenshotPopup">
+    <div class="popup-content">
+      <span class="close" onclick="closePopup()">×</span>
+      <h3>Required Screenshots</h3>
+      <div id="screenshots"></div>
+    </div>
+  </div>
+
+  <!-- Form Popup -->
+  <div class="popup" id="formPopup">
+    <div class="popup-content">
+      <span class="close" onclick="closePopup()">×</span>
+      <h3>Submit Task Proof</h3>
+      <form action="https://formsubmit.co/boltzzcompany@gmail.com" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="_subject" id="taskSubject" value="New Task Submission" />
+        <input type="hidden" name="_next" value="success.html">
+        <input type="hidden" name="_captcha" value="false">
+        <label>Email (Logged-in)</label>
+        <input type="email" id="userEmail" name="email" readonly required>
+        <label>Email / Phone Number</label>
+        <input type="text" name="contact" required />
+        <label>HustlePay Email</label>
+        <input type="email" name="hustlepay_email" required />
+        <label>Upload Screenshot 1</label>
+        <input type="file" name="screenshot1" accept="image/*" required />
+        <label>Upload Screenshot 2</label>
+        <input type="file" name="screenshot2" accept="image/*" required />
+        <input type="submit" value="🚀 Submit Task" />
+      </form>
+    </div>
+  </div>
+
+  <!-- Success Popup -->
+  <div class="popup" id="successPopup">
+    <div class="popup-content">
+      <span class="close" onclick="closePopup()">×</span>
+      <h3>🎉 Thank You!</h3>
+      <p>Your task proof has been submitted successfully!</p>
+    </div>
+  </div>
+
+   <!-- NAV -->
+<div class="bottom-nav">
+    <div onclick="go('dashboard.html')"><i class="fa-solid fa-house"></i><br>Home</div>
+    <div onclick="go('task.html')"><i class="fa-solid fa-list"></i><br>Tasks</div>
+    <div onclick="go('convert.html')"><i class="fa-solid fa-wallet"></i><br>Convert</div>
+    <div onclick="go('referral.html')"><i class="fa-solid fa-users"></i><br>Profile</div>
+</div>
+
+  <!-- <script>
+  const overlay = document.getElementById('networkOverlay');
+    const message = document.getElementById('networkMessage');
+
+    function showDisconnected() {
+      message.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/512/564/564619.png" alt="No Internet Icon"><span>POOR INTERNET CONNECTION</span>';
+      message.classList.remove('restored');
+      overlay.classList.remove('hidden');
+    }
+
+    function showRestored() {
+      message.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Connected Icon"><span>Connection Restored</span>';
+      message.classList.add('restored');
+      setTimeout(() => overlay.classList.add('hidden'), 2000);
+    }
+
+    window.addEventListener('offline', showDisconnected);
+    window.addEventListener('online', showRestored);
+
+    setInterval(() => {
+      if (!navigator.onLine) {
+        showDisconnected();
+      }
+    }, 3000);
+</script> -->
+
+
+  <script type="module" src="task1.js"></script>
+</body>
+</html>
